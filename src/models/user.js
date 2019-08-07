@@ -26,9 +26,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Password is required'],
   },
-  contactNo: String,
-  userType: String,
-  required: true,
+  orgManager: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Organization Managers',
+  },
 });
 
 // Hashing the password before saving it to the database
@@ -61,6 +62,6 @@ userSchema.methods.generateToken = async function() {
 
 userSchema.plugin(timestamps);
 
-const Developer = mongoose.model('User', userSchema, 'Users');
+const User = mongoose.model('User', userSchema, 'Users');
 
-module.exports = Developer;
+module.exports = User;
