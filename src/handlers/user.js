@@ -1,8 +1,8 @@
-const bcrypt = require('bcryptjs');
-const { randomBytes } = require('crypto');
-const { promisify } = require('util');
-const { User } = require('../models/index');
-const mail = require('../utils/mail.js');
+import { hash } from 'bcryptjs';
+import { randomBytes } from 'crypto';
+import { promisify } from 'util';
+import models from '../models/index';
+import { sendMail } from '../utils/mail.js';
 
 const setCookie = function(res, token) {
   res.cookie('token', token, {
@@ -13,48 +13,23 @@ const setCookie = function(res, token) {
   });
 };
 
-const register = async (req, res) => {
-  const user = new User({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email.toLowerCase(),
-    password: req.body.password,
-  });
-
-  try {
-    await user.save();
-  } catch (error) {
-    throw new Error(error.message);
-  }
-
-  try {
-    const token = await user.generateToken();
-    // set the jwt as a cookie on the response
-    setCookie(res, token);
-  } catch (error) {
-    throw new Error(error.message);
-  }
-
-  res.send(user);
-};
-
 const login = async (req, res) => {
+  const email = req.body.email.toLowerCase();
+  if (email === '' || req.body.password === '') throw new Error('Please fill in all the fields.');
+
   try {
     // check if there is a user with that email
-    const user = await User.findOne({ email: req.body.email });
-
-    if (!user) {
-      throw new Error('No user found with these login credentials.');
-    }
+    const user = await models.User.findOne({ email }).populate({
+      path: 'user',
+      select: 'name surname email resetToken resetTokenExpiry',
+    });
+    if (!user) throw new Error('No user found with these login credentials.');
 
     // check if the user's password is correct
     const isValid = await user.validatePassword(req.body.password);
+    if (!isValid) throw new Error('Your signin details are incorrect.');
 
-    if (!isValid) {
-      throw new Error('Your login details are incorrect.');
-    }
-
-    // create the jwt
+    // create the jwt - for the current session
     const token = await user.generateToken();
     // set the jwt as a cookie on the response
     setCookie(res, token);
@@ -68,21 +43,27 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   res.clearCookie('token');
-  res.send({ message: 'User logged out successfuly!' });
+  res.send({ message: 'Logged out successfuly!' });
 };
 
 const resetRequest = async (req, res) => {
+  const email = req.body.email.toLowerCase();
+  if (email === '') throw new Error('Please fill in all the fields.');
+
   try {
     // check if there is a user with that email
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) throw new Error(`No user was found for the email ${req.body.email}.`);
+    const user = await models.User.findOne({ email }).populate({
+      path: 'user',
+      select: 'email',
+    });
+    if (!user) throw new Error(`No user was found for the email ${email}.`);
 
     // set a reset token and its lifespan on that user
     const randomBytesPromsified = promisify(randomBytes);
     const resetToken = (await randomBytesPromsified(20)).toString('hex');
     const resetTokenExpiry = Date.now() + 3600000; // one hour from now
-    await User.findOneAndUpdate(
-      { email: user.email },
+    await models.User.findOneAndUpdate(
+      { email },
       {
         $set: {
           resetToken,
@@ -101,7 +82,7 @@ const resetRequest = async (req, res) => {
       link: 'NEED ONE', // TODO: put the reset page link here.
       buttonText: 'Follow this link to reset your password.',
     };
-    await mail.sendMail(user.email, subject, emailData);
+    await sendMail(user.email, subject, emailData);
   } catch (error) {
     throw new Error(error.message);
   }
@@ -110,22 +91,25 @@ const resetRequest = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
+  if (req.body.password === '' || req.body.confirmPassword === '') {
+    throw new Error('Please fill in all the fields.');
+  }
+
   // check if the passwords match
   if (req.body.password !== req.body.confirmPassword) throw new Error('Passwords Do Not Match');
 
   try {
     // check if the token is legit
-    const user = await User.findOne({ resetToken: req.body.resetToken });
-
+    const user = await models.User.findOne({ resetToken: req.body.resetToken });
     if (!user) throw new Error('This token is invalid.');
 
     // and check if the token has expired
     if (!(user.resetTokenExpiry > Date.now() - 3600000)) throw new Error('This token has expired.');
 
     // hash the new password
-    const newPassword = await bcrypt.hash(req.body.password, 10);
+    const newPassword = await hash(req.body.password, 10);
     // save the new password to the user and remove the old reset token fields
-    const updatedUser = await User.findOneAndUpdate(
+    const updatedUser = await models.User.findOneAndUpdate(
       { email: user.email },
       {
         $set: {
@@ -149,8 +133,7 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = {
-  register,
+export default {
   login,
   logout,
   resetRequest,

@@ -1,6 +1,6 @@
-require('winston-mongodb');
-const winston = require('winston');
-const appRoot = require('app-root-path');
+import 'winston-mongodb';
+import { createLogger, format as _format, transports as _transports } from 'winston';
+import appRoot from 'app-root-path';
 
 // Defining the custom settings for each transport (file and console in this case)
 const options = {
@@ -24,18 +24,18 @@ const options = {
 };
 
 // Instantiate a new Winston Logger with the settings defined above
-const logger = winston.createLogger({
-  format: winston.format.combine(winston.format.json(), winston.format.colorize(), winston.format.simple()),
+const logger = createLogger({
+  format: _format.combine(_format.json(), _format.colorize(), _format.simple()),
   transports: [
-    new winston.transports.File(options.file),
-    new winston.transports.Console(options.console),
-    new winston.transports.MongoDB({
+    new _transports.File(options.file),
+    new _transports.Console(options.console),
+    new _transports.MongoDB({
       db: process.env.MONGODB_URI,
       collection: 'logs',
     }),
   ],
   handleExceptions: [
-    new winston.transports.File({
+    new _transports.File({
       filename: `${appRoot}/logs/unCaughtExceptions.log`,
     }),
   ],
@@ -50,4 +50,4 @@ logger.stream = {
   },
 };
 
-module.exports = logger;
+export default logger;

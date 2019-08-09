@@ -1,5 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import express from 'express';
+import user from './routes/user';
+import orgmanager from './routes/orgmanager';
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 require('dotenv').config();
@@ -7,45 +9,38 @@ require('dotenv').config();
 // Express App
 const app = express();
 
-class Server {
-  // Express App
-  app = express();
+// Config
+// Config
+require('./config/db.js').default();
 
-  constructor() {
-    this.initDB();
-    this.initExpressMiddleware();
-    this.initRoutes();
-    this.start();
+// Middlewares
+// Middlewares
+require('./middleware/cookieParser.js').default(app);
+require('./middleware/cors.js').default(app);
+require('./middleware/bodyParser.js').default(app);
+
+const auth = async () => {
+  // Routes that don't need security middleware
+  try {
+    // eslint-disable-next-line no-console
+    console.log('auth is being defined.');
+    await user.auth(app);
+    await orgmanager.auth(app);
+  } catch (error) {
+    throw new Error('Something went wrong with the auth system');
   }
+};
 
-  initDB() {
-    // Config
-    require('./config/db.js')();
-  }
+auth();
+// eslint-disable-next-line no-console
+console.log('after auth is called.');
+require('./middleware/auth.js').default(app);
+require('./middleware/morgan.js').default(app);
+require('./middleware/error.js').default(app);
 
-  initExpressMiddleware() {
-    // Middlewares
-    require('./middleware/cookieParser.js')(app);
-    require('./middleware/auth.js')(app);
-    require('./middleware/cors.js')(app);
-    require('./middleware/loggedIn.js')(app);
-    require('./middleware/bodyParser.js')(app);
-    require('./middleware/morgan.js')(app);
-    require('./middleware/error.js')(app);
-  }
+// Routes that need to be secured under security middleware
+// require('./routes/admin.js')(app);
+// require('./routes/organization.js')(app);
+// require('./routes/posts.js')(app);
 
-  initRoutes() {
-    // Routes
-    require('./routes/auth.js')(app);
-    require('./routes/user.js')(app);
-    require('./routes/video.js')(app);
-  }
-
-  start() {
-    app.listen(process.env.PORT, () => {
-      console.log(`🚀Express Server is now running on port: ${process.env.PORT}!!! Enjoy moderately`);
-    });
-  }
-}
-
-new Server();
+export default { app };

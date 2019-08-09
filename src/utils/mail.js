@@ -1,26 +1,25 @@
-const sgMail = require('@sendgrid/mail');
-const fs = require('fs');
-const mustache = require('mustache');
+import { setApiKey, send } from '@sendgrid/mail';
+import { readFileSync } from 'fs';
+import { render as _render } from 'mustache';
 
-exports.sendMail = async (receipient, subject, emailData) => {
-    try {
-        let content = await fs.readFileSync("src/utils/views/email.template.html").toString();
-        let render = mustache.render(content, emailData);
+export async function sendMail(receipient, subject, emailData) {
+  try {
+    const content = await readFileSync('src/utils/views/email.template.html').toString();
+    const render = _render(content, emailData);
 
-        const sender = "info@zaio.io";
-    
-        const msg = {
-            to: receipient,
-            from: sender,
-            subject: subject,
-            text: 'Alert From Me',
-            html: render,
-        };
-        
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail.send(msg).then();
-    } catch (error) {
-        throw new Error(error.message);
-    }
+    const sender = 'info@zaio.io';
 
-};
+    const msg = {
+      to: receipient,
+      from: sender,
+      subject,
+      text: 'Alert From Me',
+      html: render,
+    };
+
+    setApiKey(process.env.SENDGRID_API_KEY);
+    send(msg).then();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

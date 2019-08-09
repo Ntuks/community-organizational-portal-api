@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const timestamps = require('mongoose-timestamp');
+import { Schema, model } from 'mongoose';
+import timestamps from 'mongoose-timestamp';
 
-const organizationSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+const organizationSchema = new Schema({
+  _id: Schema.Types.ObjectId,
   description: String,
   pboNPONumber: String,
   facebookPageLink: String,
@@ -18,17 +18,17 @@ const organizationSchema = new mongoose.Schema({
   contactNo: String,
   profilePicture: String,
   orgManager: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Organization Managers',
   },
   posts: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Posts',
   },
 });
 
 organizationSchema.plugin(timestamps);
 
-const Organization = mongoose.model('Organization', organizationSchema, 'Organizations');
+const Organization = model('Organization', organizationSchema, 'Organizations');
 
-module.exports = Organization;
+export default Organization;

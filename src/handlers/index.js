@@ -1,7 +1,7 @@
-const admin = require('./admin');
-const organization = require('./organization');
-const orgManager = require('./orgmanager');
-const post = require('./post');
-const user = require('./user');
+import admin from './admin';
+import organization from './organization';
+import orgManager from './orgmanager';
+import post from './post';
+import user from './user';
 
-module.exports = { admin, organization, orgManager, post, user };
+export default { admin, organization, orgManager, post, user };

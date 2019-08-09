@@ -1,9 +1,10 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
-const timestamps = require('mongoose-timestamp');
+import { genSalt, hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
+import { Schema, model } from 'mongoose';
+import timestamps from 'mongoose-timestamp';
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
+  _id: Schema.Types.ObjectId,
   name: {
     type: String,
     required: [true, 'Name is required'],
@@ -27,16 +28,18 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
   },
   orgManager: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Organization Managers',
   },
+  resetToken: String,
+  resetTokenExpiry: Number,
 });
 
 // Hashing the password before saving it to the database
 userSchema.pre('save', async function(next) {
   try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
+    const salt = await genSalt(10);
+    this.password = await hash(this.password, salt);
     next();
   } catch (error) {
     next(error);
@@ -45,23 +48,23 @@ userSchema.pre('save', async function(next) {
 
 // Validating the password
 userSchema.methods.validatePassword = async function(password) {
-  return bcrypt.compare(password, this.password);
+  return compare(password, this.password);
 };
 
 // Generating Token
 userSchema.methods.generateToken = async function() {
-  const dev = this;
+  const user = this;
   const payload = {
-    devId: dev._id,
-    email: dev.email,
+    userId: user._id,
+    email: user.email,
   };
-  return jwt.sign(payload, process.env.APP_SECRET, {
+  return sign(payload, process.env.APP_SECRET, {
     expiresIn: '1d',
   });
 };
 
 userSchema.plugin(timestamps);
 
-const User = mongoose.model('User', userSchema, 'Users');
+const User = model('User', userSchema, 'Users');
 
-module.exports = User;
+export default User;

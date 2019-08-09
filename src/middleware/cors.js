@@ -1,11 +1,11 @@
-const cors = require('cors');
+import cors from 'cors';
 
-module.exports = function(app) {
-    app.use(
-        cors({
-            origin: [process.env.FRONTEND_URL],
-            credentials: true,
-            optionsSuccessStatus: 200,
-        })
-    );
-};
+export default function(app) {
+  app.use(
+    cors({
+      origin: [process.env.FRONTEND_URL],
+      credentials: true,
+      optionsSuccessStatus: 200,
+    })
+  );
+}

@@ -1,20 +1,23 @@
-const jwt = require('jsonwebtoken');
-const { AuthenticationError } = require('apollo-server-express');
+import { verify } from 'jsonwebtoken';
+import { User } from '../models';
 
-// Decode the jwt so we can get the devId Id on each request, 
+// Decode the jwt so we can get the user Id on each request,
 // Then verify incoming token before th request hits the graphql resolvers
-module.exports = function(app) {
-    app.use(async (req, res, next) => {
-        const { token } = req.cookies;
-        if (token) {
-            try {
-                const { devId } = await jwt.verify(token, process.env.APP_SECRET);
-                // Put the devId onto the reqest for future requests to access
-                req.devId = devId;
-            } catch (error) {
-                throw new AuthenticationError('Your session expired. Sign in again.');
-            }
-        }
-        next();
-    });
-};
+export default function(app) {
+  app.use(async (req, res, next) => {
+    const { token } = req.cookies;
+    if (token) {
+      try {
+        const { userId } = await verify(token, process.env.APP_SECRET);
+        if (!userId) throw new Error('Not Authenticated as a user - Invalid Token.');
+        // Put the userId onto the reqest for future requests to access
+        req.userId = userId;
+        const user = await User.findById(req.userId);
+        req.user = user;
+      } catch (error) {
+        throw new Error('Your session expired. Sign in again.');
+      }
+    }
+    next();
+  });
+}

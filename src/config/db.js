@@ -1,13 +1,14 @@
-const mongoose = require('mongoose');
-const winston = require('../config/winston.js');
+import { connect } from 'mongoose';
+import winston from './winston.js';
 
-module.exports = function() {
+export default function() {
   const db = process.env.MONGODB_URI;
-  mongoose
-    .connect(db, {
+  connect(
+    db,
+    {
       useNewUrlParser: true,
       useFindAndModify: false,
       useCreateIndex: true,
-    })
-    .then(() => winston.info('Database Connection Successful'));
-};
+    }
+  ).then(() => winston.info('Database Connection Successful'));
+}

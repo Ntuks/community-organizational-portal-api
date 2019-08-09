@@ -1,21 +1,21 @@
-const mongoose = require('mongoose');
-const timestamps = require('mongoose-timestamp');
+import { Schema, model } from 'mongoose';
+import timestamps from 'mongoose-timestamp';
 
-const orgManagerSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+const orgManagerSchema = new Schema({
+  _id: Schema.Types.ObjectId,
   role: String,
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Users',
   },
   organization: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Organizations',
   },
 });
 
 orgManagerSchema.plugin(timestamps);
 
-const OrgManagers = mongoose.model('Oranizaion Managers', orgManagerSchema, 'Organizaion Managerss');
+const OrgManagers = model('Oranizaion Managers', orgManagerSchema, 'Organizaion Managerss');
 
-module.exports = OrgManagers;
+export default OrgManagers;

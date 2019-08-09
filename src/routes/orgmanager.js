@@ -1,25 +1,25 @@
-import { orgManager } from '../handlers';
+import handlers from '../handlers';
 
 const api = app => {
   // retrieve all Organization Managers
-  app.get('/api/v1/org-managers', orgManager.getAll);
+  app.get('/api/v1/org-managers', handlers.orgManager.getAll);
 
   // retrieve an Organization Manager
-  app.get('/api/v1/org-managers/:manId', orgManager.getOne);
+  app.get('/api/v1/org-managers/:manId', handlers.orgManager.getOne);
 
   // create an Organization Manager
-  app.get('/api/v1/organizations/:orgId', orgManager.insert);
+  app.get('/api/v1/organizations/:orgId', handlers.orgManager.insert);
 
   // update an Organization Manager
-  app.get('/api/v1/org-managers/:manId', orgManager.update);
+  app.get('/api/v1/org-managers/:manId', handlers.orgManager.update);
 
   // delete an Organization Manager
-  app.get('/api/v1/org-managers/:manId', orgManager.delete);
+  app.get('/api/v1/org-managers/:manId', handlers.orgManager.delete);
 };
 
 const auth = app => {
   // retrieve all Organization Managers
-  app.get('/signup', orgManager.getAll);
+  app.post('/register', handlers.orgManager.register);
 };
 
 export default { api, auth };
