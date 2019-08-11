@@ -6,7 +6,7 @@ const organizationSchema = new Schema({
   description: String,
   pboNPONumber: String,
   facebookPageLink: String,
-  areasOfEngagement: String,
+  areasOfEngagement: [String],
   tagLine: String,
   location: String,
   affiliates: [String],

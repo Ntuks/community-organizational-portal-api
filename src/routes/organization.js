@@ -2,17 +2,14 @@ import handlers from '../handlers';
 
 export default function(app) {
   // retrieve all Organizations
-  app.get('/api/v1/organizations', handlers.organization.getAll);
+  // app.get('/api/v1/organizations', handlers.organization.getAll);
 
   // retrieve an Organization
-  app.get('/api/v1/organizations/:orgId', handlers.organization.getOne);
-
-  // create an Organization
-  app.get('/api/v1/organizations/:orgId', handlers.organization.insert);
+  // app.get('/api/v1/organizations/:orgToken', handlers.organization.getOne);
 
   // update an Organization
-  app.get('/api/v1/organizations/:orgId', handlers.organization.update);
+  app.put('/api/v1/organizations/:orgToken', handlers.organization.update);
 
   // delete an Organization
-  app.get('/api/v1/organizations/:orgId', handlers.organization.delete);
+  // app.delete('/api/v1/organizations/:orgToken', handlers.organization.delete);
 }
