@@ -15,29 +15,54 @@ const setCookie = function(res, token) {
 
 const login = async (req, res) => {
   const email = req.body.email.toLowerCase();
-  if (email === '' || req.body.password === '') throw new Error('Please fill in all the fields.');
+  if (email === '' || req.body.password === '') {
+    res.send({ message: 'Please fill in all the fields.' });
+    return;
+  }
 
   try {
     // check if there is a user with that email
-    const user = await models.User.findOne({ email }).populate({
-      path: 'user',
-      select: 'name surname email resetToken resetTokenExpiry',
-    });
-    if (!user) throw new Error('No user found with these login credentials.');
+    const validationUser = await models.User.findOne({ email })
+      .populate({
+        path: 'orgManager',
+        select: 'role',
+      })
+      .select('-__v');
+
+    if (!validationUser) {
+      res.send({ message: 'No user found with these login credentials.' });
+      return;
+    }
 
     // check if the user's password is correct
-    const isValid = await user.validatePassword(req.body.password);
-    if (!isValid) throw new Error('Your signin details are incorrect.');
-
+    const isValid = await validationUser.validatePassword(req.body.password);
+    if (!isValid) {
+      res.send({ message: 'Your signin details are incorrect.' });
+      return;
+    }
     // create the jwt - for the current session
-    const token = await user.generateToken();
+    const token = await validationUser.generateToken();
     // set the jwt as a cookie on the response
     setCookie(res, token);
+
+    // the user object without the password
+    const user = {
+      _id: validationUser._id,
+      name: validationUser.name,
+      surname: validationUser.surname,
+      email: validationUser.email,
+      orgManager: {
+        _id: validationUser.orgManager._id,
+        role: validationUser.orgManager.role,
+      },
+      resetToken: validationUser.resetToken,
+      resetTokenExpiry: validationUser.resetTokenExpiry,
+    };
 
     // return the user
     res.send(user);
   } catch (error) {
-    throw new Error(error.message);
+    res.send({ message: error.message });
   }
 };
 
@@ -48,15 +73,18 @@ const logout = async (req, res) => {
 
 const resetRequest = async (req, res) => {
   const email = req.body.email.toLowerCase();
-  if (email === '') throw new Error('Please fill in all the fields.');
+  if (email === '') {
+    res.send({ message: 'Please fill in all the fields.' });
+    return;
+  }
 
   try {
     // check if there is a user with that email
-    const user = await models.User.findOne({ email }).populate({
-      path: 'user',
-      select: 'email',
-    });
-    if (!user) throw new Error(`No user was found for the email ${email}.`);
+    const user = await models.User.findOne({ email }).select('-password -__v');
+    if (!user) {
+      res.send({ message: `No user was found for the email ${email}.` });
+      return;
+    }
 
     // set a reset token and its lifespan on that user
     const randomBytesPromsified = promisify(randomBytes);
@@ -76,36 +104,45 @@ const resetRequest = async (req, res) => {
     // send email to the given email address
     const subject = 'Reset Password Request';
     const emailData = {
-      name: user.firstName,
+      name: user.name,
       title: 'Password reset',
       description: 'You have requested a password reset, please follow the link below to reset your password.',
       link: 'NEED ONE', // TODO: put the reset page link here.
       buttonText: 'Follow this link to reset your password.',
     };
-    await sendMail(user.email, subject, emailData);
-  } catch (error) {
-    throw new Error(error.message);
-  }
+    // await sendMail(user.email, subject, emailData);
 
-  res.send({ message: 'Reset Request Sent Successfully!' });
+    res.send({ message: 'Reset Request Sent Successfully!' });
+  } catch (error) {
+    res.send({ message: error.message.substring(error.message.lastIndexOf(':') + 2) });
+  }
 };
 
 const resetPassword = async (req, res) => {
   if (req.body.password === '' || req.body.confirmPassword === '') {
-    throw new Error('Please fill in all the fields.');
+    res.send({ message: 'Please fill in all the fields.' });
+    return;
   }
 
   // check if the passwords match
-  if (req.body.password !== req.body.confirmPassword) throw new Error('Passwords Do Not Match');
+  if (req.body.password !== req.body.confirmPassword) {
+    res.send({ message: 'Passwords Do Not Match' });
+    return;
+  }
 
   try {
-    // check if the token is legit
+    // check if the token is belongs to a user in the db
     const user = await models.User.findOne({ resetToken: req.body.resetToken });
-    if (!user) throw new Error('This token is invalid.');
+    if (!user) {
+      res.send({ message: 'This token is invalid.' });
+      return;
+    }
 
     // and check if the token has expired
-    if (!(user.resetTokenExpiry > Date.now() - 3600000)) throw new Error('This token has expired.');
-
+    if (!(user.resetTokenExpiry > Date.now() - 3600000)) {
+      res.send({ message: 'This token has expired.' });
+      return;
+    }
     // hash the new password
     const newPassword = await hash(req.body.password, 10);
     // save the new password to the user and remove the old reset token fields
@@ -119,7 +156,12 @@ const resetPassword = async (req, res) => {
         },
       },
       { new: true }
-    );
+    )
+      .populate({
+        path: 'orgManager',
+        select: 'role',
+      })
+      .select('-password -__v');
 
     // create the jwt
     const token = await updatedUser.generateToken(); // TODO: Check this - causing an error
@@ -127,9 +169,9 @@ const resetPassword = async (req, res) => {
     setCookie(res, token);
 
     // return the new user
-    res.send(updatedUser);
+    res.send({ message: 'Password Reset Successfully!' });
   } catch (error) {
-    throw new Error(error.message);
+    res.send({ message: error.message.substring(error.message.lastIndexOf(':') + 2) });
   }
 };
 

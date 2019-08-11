@@ -9,7 +9,10 @@ export default function(app) {
     if (token) {
       try {
         const { userId } = await verify(token, process.env.APP_SECRET);
-        if (!userId) throw new Error('Not Authenticated as a user - Invalid Token.');
+        if (!userId) {
+          res.send({ message: 'Not Authenticated as a user - Invalid Token.' });
+          return;
+        }
         // Put the userId onto the reqest for future requests to access
         req.userId = userId;
         const user = await User.findById(req.userId);

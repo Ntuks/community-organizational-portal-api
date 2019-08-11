@@ -16,6 +16,6 @@ const orgManagerSchema = new Schema({
 
 orgManagerSchema.plugin(timestamps);
 
-const OrgManagers = model('Oranizaion Managers', orgManagerSchema, 'Organizaion Managerss');
+const OrgManagers = model('Organization Manager', orgManagerSchema, 'Organization Managers');
 
 export default OrgManagers;

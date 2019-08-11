@@ -29,7 +29,7 @@ const userSchema = new Schema({
   },
   orgManager: {
     type: Schema.Types.ObjectId,
-    ref: 'Organization Managers',
+    ref: 'Organization Manager',
   },
   resetToken: String,
   resetTokenExpiry: Number,
@@ -61,6 +61,11 @@ userSchema.methods.generateToken = async function() {
   return sign(payload, process.env.APP_SECRET, {
     expiresIn: '1d',
   });
+};
+
+// Static Methods
+userSchema.statics.findByLogin = async email => {
+  // need to findout how these work to use them properly
 };
 
 userSchema.plugin(timestamps);
