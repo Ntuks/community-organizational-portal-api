@@ -1,4 +1,3 @@
-import { verify } from 'jsonwebtoken';
 import models from '../models/index';
 
 const activateOrganization = async (req, res) => {

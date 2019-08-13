@@ -2,7 +2,7 @@ import { hash } from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { promisify } from 'util';
 import models from '../models/index';
-import { sendMail } from '../utils/mail.js';
+// import { sendMail } from '../utils/mail.js';
 
 const setCookie = function(res, token) {
   res.cookie('token', token, {
@@ -117,14 +117,14 @@ const resetRequest = async (req, res) => {
     );
 
     // send email to the given email address
-    const subject = 'Reset Password Request';
-    const emailData = {
-      name: user.name,
-      title: 'Password reset',
-      description: 'You have requested a password reset, please follow the link below to reset your password.',
-      link: 'NEED ONE', // TODO: put the reset page link here.
-      buttonText: 'Follow this link to reset your password.',
-    };
+    // const subject = 'Reset Password Request';
+    // const emailData = {
+    //   name: user.name,
+    //   title: 'Password reset',
+    //   description: 'You have requested a password reset, please follow the link below to reset your password.',
+    //   link: 'NEED ONE', // TODO: put the reset page link here.
+    //   buttonText: 'Follow this link to reset your password.',
+    // };
     // await sendMail(user.email, subject, emailData);
 
     res.send({ message: 'Reset Request Sent Successfully!' });
