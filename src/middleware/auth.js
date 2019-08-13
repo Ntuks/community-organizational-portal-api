@@ -1,5 +1,5 @@
 import { verify } from 'jsonwebtoken';
-import { User } from '../models';
+import models from '../models';
 
 // Decode the jwt so we can get the user Id on each request,
 // Then verify incoming token before th request hits the graphql resolvers
@@ -15,7 +15,7 @@ export default function(app) {
         }
         // Put the userId onto the reqest for future requests to access
         req.userId = userId;
-        const user = await User.findById(req.userId);
+        const user = await models.User.findById(req.userId).select('-password');
         req.user = user;
       } catch (error) {
         throw new Error('Your session expired. Sign in again.');

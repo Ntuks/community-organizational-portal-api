@@ -14,15 +14,15 @@ const setCookie = function(res, token) {
 };
 
 const login = async (req, res) => {
-  const email = req.body.email.toLowerCase();
-  if (email === '' || req.body.password === '') {
+  const inputEmail = req.body.email.toLowerCase();
+  if (inputEmail === '' || req.body.password === '') {
     res.send({ message: 'Please fill in all the fields.' });
     return;
   }
 
   try {
     // check if there is a user with that email
-    const validationUser = await models.User.findOne({ email })
+    const validationUser = await models.User.findOne({ email: inputEmail })
       .populate({
         path: 'orgManager',
         select: 'role',
@@ -45,22 +45,37 @@ const login = async (req, res) => {
     // set the jwt as a cookie on the response
     setCookie(res, token);
 
-    // the user object without the password
-    const user = {
-      _id: validationUser._id,
-      name: validationUser.name,
-      surname: validationUser.surname,
-      email: validationUser.email,
-      orgManager: {
-        _id: validationUser.orgManager._id,
-        role: validationUser.orgManager.role,
-      },
-      resetToken: validationUser.resetToken,
-      resetTokenExpiry: validationUser.resetTokenExpiry,
-    };
+    const { _id, name, surname, email, orgManager, resetToken, resetTokenExpiry } = validationUser;
 
-    // return the user
-    res.send(user);
+    // check if the user is admin or orgManager
+    if (orgManager) {
+      // the user object without the password
+      const user = {
+        _id,
+        name,
+        surname,
+        email,
+        orgManager,
+        resetToken,
+        resetTokenExpiry,
+      };
+
+      // return the user
+      res.send(user);
+    } else {
+      // the user object without the password
+      const user = {
+        _id,
+        name,
+        surname,
+        email,
+        resetToken,
+        resetTokenExpiry,
+      };
+
+      // return the user
+      res.send(user);
+    }
   } catch (error) {
     res.send({ message: error.message });
   }

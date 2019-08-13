@@ -22,8 +22,6 @@ require('./middleware/bodyParser.js').default(app);
 const auth = async () => {
   // Routes that don't need security middleware
   try {
-    // eslint-disable-next-line no-console
-    console.log('auth is being defined.');
     await user.auth(app);
     await orgmanager.auth(app);
   } catch (error) {
@@ -32,15 +30,13 @@ const auth = async () => {
 };
 
 auth();
-// eslint-disable-next-line no-console
-console.log('after auth is called.');
 require('./middleware/auth.js').default(app);
 require('./middleware/morgan.js').default(app);
 require('./middleware/error.js').default(app);
 
 // Routes that need to be secured under security middleware
-// require('./routes/admin.js')(app);
-require('./routes/organization.js')(app);
+require('./routes/admin.js').default(app);
+// require('./routes/organization.js')(app);
 // require('./routes/posts.js')(app);
 
 export default { app };

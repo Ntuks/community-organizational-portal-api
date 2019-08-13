@@ -1,15 +1,15 @@
-import { admin } from '../handlers';
+import handlers from '../handlers';
 
 export default function(app) {
   // retrieve an Organization Manager
-  app.get('/api/v1/admin/:admin', admin.getOne);
+  // app.get('/api/v1/admin', handlers.admin.getOne);
 
-  // update an Organization Manager
-  app.get('/api/v1/admin/:admin', admin.update);
+  // // update an Organization Manager
+  // app.put('/api/v1/admin', handlers.admin.update);
 
-  // delete an Organization Manager
-  app.get('/api/v1/admin/activate-org-manager/:manId', admin.activate);
+  // activate an Organization
+  app.put('/api/v1/admin/activate-org', handlers.admin.activateOrganization);
 
-  // delete an Organization Manager
-  app.get('/api/v1/admin/deactivate-org-manager/:manId', admin.deactivate);
+  // deactivate an Organization
+  app.put('/api/v1/admin/deactivate-org', handlers.admin.deactivateOrganization);
 }
