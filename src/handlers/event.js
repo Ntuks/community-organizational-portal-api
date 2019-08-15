@@ -95,9 +95,8 @@ const getEvent = async (req, res) => {
     }
 
     const { eventId } = req.params;
-
-    // check if this event already exists
     const event = await models.Event.findOne({ _id: eventId }).select('-__v');
+
     res.send(event);
   } catch (error) {
     res.send({ message: error.message });
@@ -157,7 +156,7 @@ const updateEvent = async (req, res) => {
       { new: true }
     );
 
-    res.send(events);
+    res.send(event);
   } catch (error) {
     res.send({ message: error.message });
   }
@@ -170,9 +169,9 @@ const deleteEvent = async (req, res) => {
     const org = await models.Organization.findOne({ orgManager: { _id: user.orgManager._id } }).select(
       '_id status orgManager'
     );
-    if (!org.status) {
+    if (!org) {
       res.send({
-        message: 'Not allowed to event. Account not yet activated.',
+        message: 'Not allowed to delete the event.',
       });
       return;
     }
@@ -185,9 +184,11 @@ const deleteEvent = async (req, res) => {
       });
       return;
     }
-
-    const event = await models.Event.findByIdAndRemove({ _id: args._id });
-    res.send(event);
+    const { eventId } = req.params;
+    const event = await models.Event.findByIdAndRemove({ _id: eventId });
+    res.send({
+      message: 'Event deleted successfully.',
+    });
   } catch (error) {
     res.send({ message: error.message });
   }

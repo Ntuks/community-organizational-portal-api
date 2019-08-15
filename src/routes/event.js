@@ -11,8 +11,8 @@ export default function(app) {
   app.post('/api/v1/events', handlers.event.createEvent);
 
   // update a event
-  app.get('/api/v1/posts/:postId', handlers.event.updateEvent);
+  app.put('/api/v1/events/:eventId', handlers.event.updateEvent);
 
   // delete a event
-  app.get('/api/v1/posts/:postId', handlers.event.deleteEvent);
+  app.delete('/api/v1/events/:eventId', handlers.event.deleteEvent);
 }
