@@ -120,6 +120,26 @@ const getAllEvents = async (req, res) => {
     // check if this event already exists
     const events = await models.Event.find().select('-__v');
     res.send(events);
+
+    await models.OrgManager.findOneAndUpdate(
+      { _id: { _id: org.orgManager._id } },
+      {
+        $pop: {
+          events: event,
+        },
+      },
+      { new: true }
+    );
+
+    await models.Organization.findOneAndUpdate(
+      { _id: org._id },
+      {
+        $pop: {
+          events: event,
+        },
+      },
+      { new: true }
+    );
   } catch (error) {
     res.send({ message: error.message });
   }
