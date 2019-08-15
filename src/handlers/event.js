@@ -126,10 +126,71 @@ const getAllEvents = async (req, res) => {
   }
 };
 
-const updateEvent = async (req, res) => {};
+const updateEvent = async (req, res) => {
+  try {
+    // check if the token of the user allows them to create a event.
+    const { user } = req;
+    const org = await models.Organization.findOne({ orgManager: { _id: user.orgManager._id } }).select(
+      '_id status orgManager'
+    );
+    if (!org.status) {
+      res.send({
+        message: 'Not allowed to event. Account not yet activated.',
+      });
+      return;
+    }
+
+    // check if the user is trying to edit fields they are not supposed to.
+    const args = req.body;
+    if (args.orgManager != null || args.organization != null) {
+      res.send({
+        message: 'Not allowed to edit organization manager and organization.',
+      });
+      return;
+    }
+
+    const event = await models.Event.findOneAndUpdate(
+      { _id: args._id },
+      {
+        $set: { ...args },
+      },
+      { new: true }
+    );
+
+    res.send(events);
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+};
 
 const deleteEvent = async (req, res) => {
-  // models.Event.findByIdAndDelete(id));
+  try {
+    // check if the token of the user allows them to create a event.
+    const { user } = req;
+    const org = await models.Organization.findOne({ orgManager: { _id: user.orgManager._id } }).select(
+      '_id status orgManager'
+    );
+    if (!org.status) {
+      res.send({
+        message: 'Not allowed to event. Account not yet activated.',
+      });
+      return;
+    }
+
+    // check if the user is trying to edit fields they are not supposed to.
+    const args = req.body;
+    if (args.orgManager != null || args.organization != null) {
+      res.send({
+        message: 'Not allowed to edit organization manager and organization.',
+      });
+      return;
+    }
+
+    const event = await models.Event.findByIdAndRemove({ _id: args._id });
+    res.send(event);
+  } catch (error) {
+    res.send({ message: error.message });
+  }
 };
 
 export default {
