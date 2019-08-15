@@ -9,7 +9,6 @@ const createEvent = async (req, res) => {
     const org = await models.Organization.findOne({ orgManager: { _id: user.orgManager._id } }).select(
       '_id status orgManager'
     );
-    console.log(org);
     if (!org.status) {
       res.send({
         message: 'Not allowed to event. Account not yet activated.',
@@ -57,8 +56,8 @@ const createEvent = async (req, res) => {
       return;
     }
 
-    await models.User.findOneAndUpdate(
-      { orgManager: { _id: org.orgManager._id } },
+    await models.OrgManager.findOneAndUpdate(
+      { _id: { _id: org.orgManager._id } },
       {
         $push: {
           events: event,
@@ -81,62 +80,62 @@ const createEvent = async (req, res) => {
   }
 };
 
-export default {
-  createEvent,
+const getEvent = async (req, res) => {
+  try {
+    // check if the token of the user allows them to create a event.
+    const { user } = req;
+    const org = await models.Organization.findOne({ orgManager: { _id: user.orgManager._id } }).select(
+      '_id status orgManager'
+    );
+    if (!org.status) {
+      res.send({
+        message: 'Not allowed to event. Account not yet activated.',
+      });
+      return;
+    }
+
+    const { eventId } = req.params;
+
+    // check if this event already exists
+    const event = await models.Event.findOne({ _id: eventId }).select('-__v');
+    res.send(event);
+  } catch (error) {
+    res.send({ message: error.message });
+  }
 };
 
-// module.exports = {
-//   Query: {
-//     events: combineResolvers(isAuthenticated, async (_, args, { models, req }) => {
-//       try {
-//         return models.Event.find({ society: req.societyId });
-//       } catch (error) {
-//         throw new Error('Error Fetching Events! \n Error:', error.message);
-//       }
-//     }),
-//     event: combineResolvers(isAuthenticated, async (_, args, { models }) => {
-//       try {
-//         return models.Event.findById(args.id);
-//       } catch (error) {
-//         throw new Error('Error Fetching Event! \n Error:', error.message);
-//       }
-//     }),
-//   },
+const getAllEvents = async (req, res) => {
+  try {
+    // check if the token of the user allows them to create a event.
+    const { user } = req;
+    const org = await models.Organization.findOne({ orgManager: { _id: user.orgManager._id } }).select(
+      '_id status orgManager'
+    );
+    if (!org.status) {
+      res.send({
+        message: 'Not allowed to event. Account not yet activated.',
+      });
+      return;
+    }
 
-//   Mutation: {
-//     createEvent: combineResolvers(isAuthenticated, async (_, args, { models, req }) => {
-//       const event = new models.Event({
-//         ...args,
-//         society: req.societyId,
-//       });
+    // check if this event already exists
+    const events = await models.Event.find().select('-__v');
+    res.send(events);
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+};
 
-//       try {
-//         return event.save();
-//       } catch (error) {
-//         throw new Error('Creation Unsuccessful', error.message);
-//       }
-//     }),
+const updateEvent = async (req, res) => {};
 
-//     updateEvent: combineResolvers(isAuthenticated, async (_, args, { models }) => {
-//       const updates = {
-//         ...args,
-//       };
+const deleteEvent = async (req, res) => {
+  // models.Event.findByIdAndDelete(id));
+};
 
-//       delete updates.id;
-
-//       try {
-//         return models.Event.findByIdAndUpdate(
-//           args.id,
-//           {
-//             $set: { ...updates },
-//           },
-//           { new: true }
-//         );
-//       } catch (error) {
-//         throw new Error('Update Unsuccessful', error.message);
-//       }
-//     }),
-
-//     deleteEvent: combineResolvers(isAuthenticated, async (_, { id }, { models }) => models.Event.findByIdAndDelete(id)),
-//   },
-// };
+export default {
+  createEvent,
+  getEvent,
+  getAllEvents,
+  updateEvent,
+  deleteEvent,
+};
