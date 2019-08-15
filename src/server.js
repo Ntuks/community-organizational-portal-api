@@ -41,6 +41,6 @@ require('./middleware/error.js').default(app);
 // Routes that need to be secured under security middleware
 // require('./routes/admin.js')(app);
 require('./routes/organization.js').default(app);
-// require('./routes/posts.js')(app);
+require('./routes/event.js').default(app);
 
 export default { app };

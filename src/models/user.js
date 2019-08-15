@@ -57,7 +57,7 @@ userSchema.methods.generateToken = async function() {
   const payload = {
     userId: user._id,
     email: user.email,
-    orgId: user.orgManager._id,
+    orgManagerId: user.orgManager._id,
   };
   return sign(payload, process.env.APP_SECRET, {
     expiresIn: '1d',

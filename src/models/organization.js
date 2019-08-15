@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import timestamps from 'mongoose-timestamp';
+import { Schema, model } from "mongoose";
+import timestamps from "mongoose-timestamp";
 
 const organizationSchema = new Schema({
   _id: Schema.Types.ObjectId,
@@ -12,23 +12,37 @@ const organizationSchema = new Schema({
   affiliates: [String],
   status: {
     type: String,
-    enum: ['INACTIVE', 'ACTIVE'],
-    default: 'INACTIVE',
+    enum: ["INACTIVE", "ACTIVE"],
+    default: "INACTIVE"
   },
   contactNo: String,
   profilePicture: String,
   orgManager: {
     type: Schema.Types.ObjectId,
-    ref: 'Organization Managers',
+    ref: "Organization Managers"
   },
-  posts: {
-    type: Schema.Types.ObjectId,
-    ref: 'Posts',
-  },
+  events: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Posts"
+    }
+  ],
+  campaigns: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Posts"
+    }
+  ],
+  projects: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Posts"
+    }
+  ]
 });
 
 organizationSchema.plugin(timestamps);
 
-const Organization = model('Organization', organizationSchema, 'Organizations');
+const Organization = model("Organization", organizationSchema, "Organizations");
 
 export default Organization;

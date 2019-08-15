@@ -8,7 +8,7 @@ export default function(app) {
     const { token } = req.cookies;
     if (token) {
       try {
-        const { userId } = await verify(token, process.env.APP_SECRET);
+        const { userId, orgId } = await verify(token, process.env.APP_SECRET);
         if (!userId) {
           res.send({ message: 'Not Authenticated as a user - Invalid Token.' });
           return;
@@ -23,6 +23,7 @@ export default function(app) {
           .select('-password -__v');
 
         req.user = user;
+        req.orgId = orgId;
       } catch (error) {
         throw new Error('Your session expired. Sign in again.');
       }
