@@ -190,7 +190,7 @@ const deleteEvent = async (req, res) => {
       message: 'Event deleted successfully.',
     });
 
-    // this functionality has not been tested yet
+    // this functionality has not been tested yet --> might be buggy
     await models.OrgManager.findOneAndUpdate(
       { _id: { _id: org.orgManager._id } },
       {
