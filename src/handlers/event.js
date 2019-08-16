@@ -120,26 +120,6 @@ const getAllEvents = async (req, res) => {
     // check if this event already exists
     const events = await models.Event.find().select('-__v');
     res.send(events);
-
-    await models.OrgManager.findOneAndUpdate(
-      { _id: { _id: org.orgManager._id } },
-      {
-        $pop: {
-          events: event,
-        },
-      },
-      { new: true }
-    );
-
-    await models.Organization.findOneAndUpdate(
-      { _id: org._id },
-      {
-        $pop: {
-          events: event,
-        },
-      },
-      { new: true }
-    );
   } catch (error) {
     res.send({ message: error.message });
   }
@@ -209,6 +189,27 @@ const deleteEvent = async (req, res) => {
     res.send({
       message: 'Event deleted successfully.',
     });
+
+    // this functionality has not been tested yet
+    await models.OrgManager.findOneAndUpdate(
+      { _id: { _id: org.orgManager._id } },
+      {
+        $pop: {
+          events: event,
+        },
+      },
+      { new: true }
+    );
+
+    await models.Organization.findOneAndUpdate(
+      { _id: org._id },
+      {
+        $pop: {
+          events: event,
+        },
+      },
+      { new: true }
+    );
   } catch (error) {
     res.send({ message: error.message });
   }
