@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 import timestamps from 'mongoose-timestamp';
 
-const eventSchema = new Schema({
+const campaignSchema = new Schema({
   _id: Schema.Types.ObjectId,
   title: {
     type: String,
@@ -11,15 +11,7 @@ const eventSchema = new Schema({
     type: String,
     required: true,
   },
-  location: {
-    type: String,
-    required: true,
-  },
-  time: {
-    type: String,
-    required: true,
-  },
-  date: {
+  duration: {
     type: String,
     required: true,
   },
@@ -35,8 +27,8 @@ const eventSchema = new Schema({
   },
 });
 
-eventSchema.plugin(timestamps);
+campaignSchema.plugin(timestamps);
 
-const Event = model('Event', eventSchema, 'Posts');
+const Campaign = model('Campaign', campaignSchema, 'Posts');
 
-export default Event;
+export default Campaign;

@@ -1,7 +1,9 @@
-import admin from "./admin";
-import organization from "./organization";
-import orgManager from "./orgmanager";
-import event from "./event";
-import user from "./user";
+import admin from './admin';
+import campaign from './campaign';
+import event from './event';
+import organization from './organization';
+import orgManager from './orgmanager';
+import project from './project';
+import user from './user';
 
-export default { admin, organization, orgManager, event, user };
+export default { admin, campaign, event, organization, orgManager, project, user };

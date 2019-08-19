@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import timestamps from 'mongoose-timestamp';
 
+// TODO: refine the information we are collecting here - look at linkedIn for example
 const eventSchema = new Schema({
   _id: Schema.Types.ObjectId,
   title: {
@@ -11,19 +12,11 @@ const eventSchema = new Schema({
     type: String,
     required: true,
   },
-  location: {
+  duration: {
     type: String,
     required: true,
   },
-  time: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: String,
-    required: true,
-  },
-  interested: Number,
+  involved: Number,
   poster: String,
   organization: {
     type: Schema.Types.ObjectId,
@@ -37,6 +30,6 @@ const eventSchema = new Schema({
 
 eventSchema.plugin(timestamps);
 
-const Event = model('Event', eventSchema, 'Posts');
+const Project = model('Project', eventSchema, 'Posts');
 
-export default Event;
+export default Project;
