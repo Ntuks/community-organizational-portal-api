@@ -15,13 +15,7 @@ export default function(app) {
         }
         // Put the userId onto the reqest for future requests to access
         req.userId = userId;
-        const user = await models.User.findById(req.userId)
-          .populate({
-            path: 'orgManager',
-            select: 'role',
-          })
-          .select('-password -__v');
-
+        const user = await models.User.findById(req.userId).select('-password');
         req.user = user;
         req.orgId = orgId;
       } catch (error) {
