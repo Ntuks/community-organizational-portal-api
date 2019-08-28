@@ -25,7 +25,7 @@ const login = async (req, res) => {
     const validationUser = await models.User.findOne({ email: inputEmail })
       .populate({
         path: 'orgManager',
-        select: 'role',
+        select: 'role organization',
       })
       .select('-__v');
 
@@ -41,7 +41,7 @@ const login = async (req, res) => {
       return;
     }
     // create the jwt - for the current session
-    const token = await validationUser.generateToken();
+    const token = await validationUser.generateToken(validationUser.orgManager.organization);
     // set the jwt as a cookie on the response
     setCookie(res, token);
 

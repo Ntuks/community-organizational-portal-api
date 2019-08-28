@@ -8,16 +8,20 @@ export default function(app) {
     const { token } = req.cookies;
     if (token) {
       try {
-        const { userId, orgId } = await verify(token, process.env.APP_SECRET);
+        const { userId } = await verify(token, process.env.APP_SECRET);
         if (!userId) {
           res.send({ message: 'Not Authenticated as a user - Invalid Token.' });
           return;
         }
         // Put the userId onto the reqest for future requests to access
         req.userId = userId;
-        const user = await models.User.findById(req.userId).select('-password');
+        const user = await models.User.findById(req.userId)
+          .populate({
+            path: 'orgManager',
+            select: 'organization',
+          })
+          .select('-password');
         req.user = user;
-        req.orgId = orgId;
       } catch (error) {
         throw new Error('Your session expired. Sign in again.');
       }

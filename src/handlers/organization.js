@@ -5,8 +5,7 @@ const update = async (req, res) => {
   // check if there is a current society ID
   // get the user
   const { orgToken } = req.params;
-  const { orgId } = await verify(orgToken, process.env.APP_SECRET);
-
+  const { orgManagerId } = await verify(orgToken, process.env.APP_SECRET);
   const args = req.body;
   if (args.posts != null || args.status != null || args.orgManager != null) {
     res.send({ message: 'Not allowed to edit organization manager, posts and/or status like this.' });
@@ -14,7 +13,7 @@ const update = async (req, res) => {
   }
 
   const org = await models.Organization.findOneAndUpdate(
-    { orgManager: { _id: orgId } },
+    { orgManager: { _id: orgManagerId } },
     {
       $set: { ...args },
     },

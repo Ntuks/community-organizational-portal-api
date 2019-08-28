@@ -52,12 +52,13 @@ userSchema.methods.validatePassword = async function(password) {
 };
 
 // Generating Token
-userSchema.methods.generateToken = async function() {
+userSchema.methods.generateToken = async function(orgId) {
   const user = this;
   const payload = {
     userId: user._id,
     email: user.email,
     orgManagerId: user.orgManager._id,
+    orgId,
   };
   return sign(payload, process.env.APP_SECRET, {
     expiresIn: '1d',
