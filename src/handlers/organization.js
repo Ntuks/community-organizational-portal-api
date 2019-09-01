@@ -23,6 +23,22 @@ const update = async (req, res) => {
   res.send(org);
 };
 
+export const getAll = async (req, res) => {
+  const org = await models.Organization.find({});
+  res.send(org);
+};
+
+export const getOne = async (req, res) => {
+  // eslint-disable-next-line no-console
+  // console.log(req.query);
+  // eslint-disable-next-line no-console
+  console.log(req.params.orgToken);
+  const org = await models.Organization.findById(req.params.orgToken);
+  res.send(org);
+};
+
 export default {
   update,
+  getAll,
+  getOne,
 };

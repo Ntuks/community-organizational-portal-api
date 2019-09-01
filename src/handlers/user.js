@@ -56,6 +56,7 @@ const login = async (req, res) => {
         surname,
         email,
         orgManager,
+        token,
         resetToken,
         resetTokenExpiry,
       };

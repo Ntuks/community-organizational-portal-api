@@ -3,6 +3,7 @@ import timestamps from "mongoose-timestamp";
 
 const organizationSchema = new Schema({
   _id: Schema.Types.ObjectId,
+  title: String,
   description: String,
   pboNPONumber: String,
   facebookPageLink: String,

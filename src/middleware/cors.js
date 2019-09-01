@@ -6,6 +6,8 @@ export default function(app) {
       origin: [process.env.FRONTEND_URL],
       credentials: true,
       optionsSuccessStatus: 200,
+      'Access-Control-Allow-Origin': [process.env.FRONTEND_URL],
+      'Access-Control-Allow-Credentials': true,
     })
   );
 }
