@@ -27,6 +27,7 @@ const userSchema = new Schema({
     type: String,
     required: [true, 'Password is required'],
   },
+  role: String,
   orgManager: {
     type: Schema.Types.ObjectId,
     ref: 'Organization Manager',
@@ -57,11 +58,12 @@ userSchema.methods.generateToken = async function(orgId) {
   const payload = {
     userId: user._id,
     email: user.email,
+    role: user.role,
     orgManagerId: user.orgManager._id,
     orgId,
   };
   return sign(payload, process.env.APP_SECRET, {
-    expiresIn: '1d',
+    expiresIn: '1h',
   });
 };
 

@@ -45,7 +45,7 @@ const login = async (req, res) => {
     // set the jwt as a cookie on the response
     setCookie(res, token);
 
-    const { _id, name, surname, email, orgManager, resetToken, resetTokenExpiry } = validationUser;
+    const { _id, name, surname, email, role, orgManager, resetToken, resetTokenExpiry } = validationUser;
 
     // check if the user is admin or orgManager
     if (orgManager) {
@@ -55,6 +55,7 @@ const login = async (req, res) => {
         name,
         surname,
         email,
+        role,
         orgManager,
         resetToken,
         resetTokenExpiry,
@@ -69,6 +70,7 @@ const login = async (req, res) => {
         name,
         surname,
         email,
+        role,
         resetToken,
         resetTokenExpiry,
       };
