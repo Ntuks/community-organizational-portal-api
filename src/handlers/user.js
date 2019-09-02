@@ -72,6 +72,7 @@ const login = async (req, res) => {
         surname,
         email,
         role,
+        token,
         resetToken,
         resetTokenExpiry,
       };
