@@ -41,7 +41,7 @@ const login = async (req, res) => {
       return;
     }
     // create the jwt - for the current session
-    const token = await validationUser.generateToken(validationUser.orgManager.organization);
+    const token = await validationUser.generateToken(validationUser.orgManager);
     // set the jwt as a cookie on the response
     setCookie(res, token);
 

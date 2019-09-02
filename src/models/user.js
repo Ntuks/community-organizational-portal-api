@@ -53,14 +53,13 @@ userSchema.methods.validatePassword = async function(password) {
 };
 
 // Generating Token
-userSchema.methods.generateToken = async function(orgId) {
+userSchema.methods.generateToken = async function(orgManager) {
   const user = this;
   const payload = {
     userId: user._id,
     email: user.email,
     role: user.role,
-    orgManagerId: user.orgManager._id,
-    orgId,
+    orgManagerId: orgManager,
   };
   return sign(payload, process.env.APP_SECRET, {
     expiresIn: '1h',
