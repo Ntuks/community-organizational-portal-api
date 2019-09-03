@@ -62,7 +62,7 @@ userSchema.methods.generateToken = async function(orgManager) {
     orgManagerId: orgManager,
   };
   return sign(payload, process.env.APP_SECRET, {
-    expiresIn: '1h',
+    expiresIn: '1d',
   });
 };
 
