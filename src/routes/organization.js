@@ -7,8 +7,10 @@ function api(app) {
   // retrieve an Organization
   app.get('/api/v1/organization/:orgToken', handlers.organization.getOne);
 
+  app.get('/api/v1/test', handlers.organization.test);
+
   // update an Organization
-  app.put('/api/v1/organization/:orgToken', handlers.organization.update);
+  app.put('/api/v1/organization/:orgId', handlers.organization.update);
 
   // delete an Organization
   // app.delete('/api/v1/organizations/:orgToken', handlers.organization.delete);
