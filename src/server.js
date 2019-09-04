@@ -38,5 +38,6 @@ require('./middleware/error.js').default(app);
 require('./routes/project.js').default(app);
 require('./routes/organization.js').default(app);
 require('./routes/event.js').default(app);
+require('./routes/campaign.js').default(app);
 
 export default { app };

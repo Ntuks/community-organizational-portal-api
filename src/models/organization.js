@@ -3,25 +3,59 @@ import timestamps from 'mongoose-timestamp';
 
 const organizationSchema = new Schema({
   _id: Schema.Types.ObjectId,
-  title: String,
-  description: String,
-  pboNPONumber: String,
-  facebookPageLink: String,
+  title: {
+    type: String,
+    default: '',
+  },
+  description: {
+    type: String,
+    default: '',
+  },
+  pboNPONumber: {
+    type: String,
+    default: '',
+  },
+  email: {
+    type: String,
+    default: '',
+  },
+  facebookPageLink: {
+    type: String,
+    default: '',
+  },
   areasOfEngagement: [String],
-  tagLine: String,
-  location: String,
+  tagline: {
+    type: String,
+    default: '',
+  },
+  location: {
+    type: String,
+    default: '',
+  },
   affiliates: [String],
   coordinates: {
-    lat: String,
-    lng: String,
+    lat: {
+      type: Number,
+      default: 0,
+    },
+    lng: {
+      type: Number,
+      default: 0,
+    },
   },
   status: {
     type: String,
     enum: ['INACTIVE', 'ACTIVE'],
     default: 'INACTIVE',
   },
-  contactNo: String,
-  profilePicture: String,
+  contactNo: {
+    type: String,
+    default: '',
+  },
+  profilePicture: {
+    type: String,
+    default: '',
+  },
   orgManager: {
     type: Schema.Types.ObjectId,
     ref: 'Organization Managers',
