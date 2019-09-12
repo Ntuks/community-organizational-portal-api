@@ -19,7 +19,7 @@ export default class Organization extends Typegoose{
     private description: string;
     
     @prop({ default: ""})
-    private pboNPONumber: string;
+    private pboNpoNumber: string;
     
     @prop({ default: ""})
     private contactNo: string;
@@ -28,7 +28,7 @@ export default class Organization extends Typegoose{
     private email: string;
     
     @prop({ default: ""})
-    private facebookPageLink: string;
+    private facebookPagelink: string;
     
     @prop({ default: ""})
     private location: string;
@@ -66,8 +66,8 @@ export default class Organization extends Typegoose{
             location: this.location,
             coordinates: this.coordinates,
             areasOfEngagement: this.areasOfEngagement,
-            facebookPageLink: this.facebookPageLink,
-            pboNPONumber: this.pboNPONumber,
+            facebookPagelink: this.facebookPagelink,
+            pboNpoNumber: this.pboNpoNumber,
             description: this.description,
             email: this.email,
             events: this.events,
