@@ -68,22 +68,23 @@ export default class PostsController implements Controller {
                 res.status(404).send();
             }
         
-            const campaigns = await campaignModel.find();
-            const events = await eventModel.find();
-            const projects = await projectModel.find();
+            const allCampaigns = await campaignModel.find();
+            const allEvents = await eventModel.find();
+            const allProjects = await projectModel.find();
             
-            const orgCampaigns = PostsController.compare(campaigns, organization.get('campaigns'));
-            const orgEvents = PostsController.compare(events, organization.get('events'));
-            const orgProjects = PostsController.compare(projects, organization.get('projects'));
+            const orgCampaigns = PostsController.compare(allCampaigns, organization.get('campaigns'));
+            const orgEvents = PostsController.compare(allEvents, organization.get('events'));
+            const orgProjects = PostsController.compare(allProjects, organization.get('projects'));
 
-            let posts: any[] = orgCampaigns;
-            posts = posts.concat(orgEvents);
-            posts = posts.concat(orgProjects);
             const orgName = organization.get('title');
 
             res.send({
                 name: orgName,
-                posts: posts,
+                posts: {
+                    events: orgEvents,
+                    campaigns: orgCampaigns,
+                    projects: orgProjects
+                },
             });
         } catch (error) {
             res.status(500).send(error);

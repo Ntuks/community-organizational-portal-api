@@ -13,7 +13,9 @@ router.get("/organizations", [checkJwt, checkRole(["ADMIN"])], OrgController.get
 router.get("/organizations/public-data", OrgController.getAllPublic);
 
 // 
-router.get("/organizations/all-posts/:id", PostsController.getAllPosts);
+router.get("/organizations/all-posts/", PostsController.getAllPosts);
+
+router.get("/organizations/all-posts/:id", PostsController.getAllPostsByOrgId);
 
 // Get an organization manager
 router.get("/organizations/:id", [checkJwt, checkRole(["ADMIN", "Organization Manager"])], OrgController.getOneById);
