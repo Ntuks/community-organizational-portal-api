@@ -3,6 +3,6 @@ The web app allow community organisations to upload a profile of what they do, i
 
 # Installation
 1. git clone https://github.com/Ntuks/community-organizational-portal-api.git
-2. cd src/
+2. cd community-organizational-portal-api/
 3. npm install
 4. npm start
